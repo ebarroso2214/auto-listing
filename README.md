@@ -155,10 +155,11 @@ car-auction-analyzer/
 
 ### Local Development
 
-1. Make changes to the code
-2. Go to `chrome://extensions/`
-3. Click the refresh icon on the extension
-4. Test changes on auction sites
+Assuming you decided to make any changes to the look and feel or any form of functionality, you can follow the steps below:
+
+1. Go to `chrome://extensions/`
+2. Click the refresh icon on the extension
+3. Test changes on auction sites
 
 ### Adding New Auction Sites
 
