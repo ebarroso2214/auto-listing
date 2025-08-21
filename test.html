@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Page for Car Auction Analyzer</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .vehicle-info { background: #f5f5f5; padding: 20px; margin-bottom: 20px; }
+        .vehicle-image { max-width: 300px; height: auto; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>Test Vehicle Listing</h1>
+    <div class="vehicle-info">
+        <h2>2018 Toyota Camry</h2>
+        <img src="https://via.placeholder.com/400x300/0066cc/ffffff?text=2018+Toyota+Camry" 
+             alt="Vehicle Image" class="vehicle-image" />
+        <p><strong>Year:</strong> 2018</p>
+        <p><strong>Make:</strong> Toyota</p>
+        <p><strong>Model:</strong> Camry</p>
+        <p><strong>Mileage:</strong> 85,000 miles</p>
+        <p><strong>Current Bid:</strong> $12,500</p>
+        <p><strong>Title Status:</strong> Clean</p>
+        <p><strong>Location:</strong> Los Angeles, CA</p>
+        <p><strong>Damage:</strong> Front end damage, runs and drives</p>
+    </div>
+    
+    <script src="utils/parser.js"></script>
+    <script>
+        // Mock data for testing - this simulates what the parser would extract
+        window.testVehicleData = {
+            title: "2018 Toyota Camry",
+            year: "2018",
+            make: "Toyota",
+            model: "Camry",
+            mileage: 85000,
+            currentBid: 12500,
+            titleStatus: "Clean",
+            location: "Los Angeles, CA",
+            damage: "Front end damage, runs and drives",
+            images: ["https://via.placeholder.com/400x300/0066cc/ffffff?text=2018+Toyota+Camry"],
+            primaryImage: "https://via.placeholder.com/400x300/0066cc/ffffff?text=2018+Toyota+Camry"
+        };
+        
+        console.log("Test page loaded with vehicle data:", window.testVehicleData);
+        
+        // Test the parser on this page
+        if (window.VehicleParser) {
+            const parsedData = VehicleParser.parseGeneric();
+            console.log("Parsed data from page:", parsedData);
+        }
+    </script>
+</body>
+</html>

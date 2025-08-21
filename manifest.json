@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "Car Auction AI Analyzer",
+  "version": "1.1",
+  "description": "AI-powered analysis of car auction listings to help determine if a vehicle is a good buy",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://api.openai.com/*",
+    "https://*.copart.com/*",
+    "https://*.iaai.com/*",
+    "https://*.manheim.com/*",
+    "https://*.cars.com/*",
+    "https://*.autotrader.com/*",
+    "https://*.cargurus.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.copart.com/*",
+        "https://*.iaai.com/*",
+        "https://*.manheim.com/*"
+      ],
+      "js": ["utils/parser.js", "content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Analyze Car Auction Listing",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

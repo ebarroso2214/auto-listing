@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=400, initial-scale=1.0">
+  <title>Car Auction AI Analyzer</title>
+  <link rel="stylesheet" href="popup.css">
+  <style>
+    html { width: 400px; height: 600px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">
+        <img src="./icons/rev motors.png" alt="Rev motors.png" width="50" height="50">
+        <h1>Listing Analyzer</h1>
+      </div>
+      <button id="settings-btn" class="settings-btn" title="Settings">⚙️</button>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settings-panel" class="settings-panel hidden">
+      <div class="settings-header">
+        <h3>Settings</h3>
+        <button id="close-settings" class="close-btn">×</button>
+      </div>
+      
+      <div class="setting-group">
+        <label for="api-key">OpenAI API Key:</label>
+        <div class="input-group">
+          <input type="password" id="api-key" placeholder="sk-..." />
+          <button id="toggle-key-visibility" class="toggle-btn">👁️</button>
+        </div>
+        <div class="api-key-status">
+          <span id="key-status">No API key configured</span>
+        </div>
+        <button id="save-api-key" class="btn btn-primary">Save Key</button>
+      </div>
+
+      <div class="setting-info">
+        <p><strong>How to get an API key:</strong></p>
+        <ol>
+          <li>Visit <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI API Keys</a></li>
+          <li>Create a new secret key</li>
+          <li>Copy and paste it above</li>
+        </ol>
+        <p class="note">Your API key is stored locally and never shared.</p>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" class="main-content">
+      <!-- No API Key State -->
+      <div id="no-api-key" class="state-panel hidden">
+        <div class="message-panel">
+          <div class="icon">🔑</div>
+          <h3>API Key Required</h3>
+          <p>Please configure your OpenAI API key in settings to use the AI analysis feature.</p>
+          <button id="open-settings-btn" class="btn btn-primary">Open Settings</button>
+        </div>
+      </div>
+
+      <!-- No Vehicle Data State -->
+      <div id="no-vehicle" class="state-panel hidden">
+        <div class="message-panel">
+          <div class="icon">🔍</div>
+          <h3>No Vehicle Detected</h3>
+          <p>Navigate to a car auction listing to analyze the vehicle.</p>
+          <div class="supported-sites">
+            <p><strong>Supported sites:</strong></p>
+            <ul>
+              <li>Copart.com</li>
+              <li>IAAI.com</li>
+              <li>Manheim.com</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vehicle Info Panel -->
+      <div id="vehicle-info" class="vehicle-info hidden">
+        <div class="vehicle-header">
+          <h3 id="vehicle-title">Vehicle Details</h3>
+          <button id="analyze-btn" class="btn btn-analyze">
+            <span id="analyze-text">Analyze Vehicle</span>
+            <div id="analyze-spinner" class="spinner hidden"></div>
+          </button>
+        </div>
+        
+        <!-- Vehicle Image -->
+        <div id="vehicle-image-container" class="vehicle-image-container hidden">
+          <img id="vehicle-image" class="vehicle-image" alt="Vehicle photo" />
+          <div class="image-overlay">
+            <span class="image-label">Vehicle Photo</span>
+          </div>
+        </div>
+        
+        <div class="vehicle-details">
+          <div class="detail-row">
+            <span class="label">Year:</span>
+            <span id="vehicle-year">-</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Mileage:</span>
+            <span id="vehicle-mileage">-</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Current Bid:</span>
+            <span id="vehicle-price">-</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Title Status:</span>
+            <span id="vehicle-title-status">-</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Location:</span>
+            <span id="vehicle-location">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analysis Results -->
+      <div id="analysis-results" class="analysis-results hidden">
+        <div class="analysis-header">
+          <div class="score-container">
+            <div class="score-circle">
+              <span id="overall-score">-</span>
+              <span class="score-label">Score</span>
+            </div>
+            <div class="recommendation">
+              <div id="recommendation-badge" class="badge">-</div>
+              <div id="risk-level" class="risk-level">-</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="analysis-content">
+          <div class="section">
+            <h4>💰 Price Analysis</h4>
+            <div class="price-info">
+              <div class="price-row">
+                <span>Current Bid:</span>
+                <span id="analysis-current-bid">-</span>
+              </div>
+              <div class="price-row">
+                <span>Market Value:</span>
+                <span id="analysis-market-value">-</span>
+              </div>
+              <div class="price-row">
+                <span>Rating:</span>
+                <span id="price-rating" class="badge">-</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h4>🔧 Condition</h4>
+            <div id="condition-info">
+              <p id="body-condition">-</p>
+              <div id="mechanical-concerns" class="concerns-list"></div>
+              <div id="repair-estimate" class="repair-estimate"></div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h4>📊 Pros & Cons</h4>
+            <div class="pros-cons">
+              <div class="pros">
+                <h5>✅ Pros</h5>
+                <ul id="pros-list"></ul>
+              </div>
+              <div class="cons">
+                <h5>❌ Cons</h5>
+                <ul id="cons-list"></ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h4>💡 Summary</h4>
+            <div id="analysis-summary" class="summary">-</div>
+          </div>
+
+          <div class="analysis-footer">
+            <small id="analysis-timestamp">-</small>
+            <button id="refresh-analysis" class="btn btn-secondary">🔄 Refresh</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading-state" class="loading-state hidden">
+        <div class="loading-spinner"></div>
+        <p>Analyzing vehicle with AI...</p>
+        <small>This may take a few seconds</small>
+      </div>
+
+      <!-- Error State -->
+      <div id="error-state" class="error-state hidden">
+        <div class="error-icon">⚠️</div>
+        <h3>Analysis Failed</h3>
+        <p id="error-message">Something went wrong</p>
+        <button id="retry-analysis" class="btn btn-primary">Try Again</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
